@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900 antialiased;
+}
+
+.section-card {
+  @apply rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200;
+}
