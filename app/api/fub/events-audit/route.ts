@@ -48,6 +48,7 @@ export async function GET() {
     );
     const events = result.events ?? [];
 
+    const eventFields = new Set<string>();
     const eventTypeCounts: Record<string, number> = {};
     const propertyCityCounts: Record<string, number> = {};
     const propertyStateCounts: Record<string, number> = {};
@@ -60,9 +61,12 @@ export async function GET() {
 
     let eventsWithProperty = 0;
     let eventsWithPropertySearch = 0;
+    let eventsWithPersonLink = 0;
 
     for (const event of events) {
+      collectKeys(eventFields, event);
       increment(eventTypeCounts, event.type);
+      if (event.personId !== undefined || event.person !== undefined) eventsWithPersonLink += 1;
 
       const property = event.property;
       if (property && typeof property === "object" && !Array.isArray(property)) {
@@ -87,8 +91,10 @@ export async function GET() {
 
     return NextResponse.json({
       sampledEvents: events.length,
+      eventsWithPersonLink,
       eventsWithProperty,
       eventsWithPropertySearch,
+      eventFieldNames: Array.from(eventFields).sort(),
       eventTypeCounts: sortedCounts(eventTypeCounts),
       propertyFieldNames: Array.from(propertyFields).sort(),
       propertySearchFieldNames: Array.from(propertySearchFields).sort(),
