@@ -27,6 +27,25 @@ export async function fubGet<T>(path: string): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+export async function fubPut<T>(path: string, body: unknown): Promise<T> {
+  const response = await fetch(`${FUB_BASE_URL}${path}`, {
+    method: "PUT",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: authHeader(),
+    },
+    body: JSON.stringify(body),
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Follow Up Boss update failed (${response.status})`);
+  }
+
+  return response.json() as Promise<T>;
+}
+
 export type FubPerson = {
   id?: number;
   firstName?: string;
@@ -47,4 +66,10 @@ export type FubPeopleResponse = {
 export async function getFubPeople(limit = 10) {
   const safeLimit = Math.max(1, Math.min(limit, 100));
   return fubGet<FubPeopleResponse>(`/people?limit=${safeLimit}`);
+}
+
+export async function mergeFubTag(personId: number | string, tag: string) {
+  return fubPut<FubPerson>(`/people/${encodeURIComponent(String(personId))}?mergeTags=true`, {
+    tags: [tag],
+  });
 }
