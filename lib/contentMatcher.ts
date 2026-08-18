@@ -38,7 +38,7 @@ export function scoreContentForLead(
     return null;
   }
 
-  if (content.audience === lead.audience && lead.audience !== "Unknown") {
+  if (content.audience === lead.audience) {
     score += 30;
     reasons.push("audience match");
   } else if (content.audience === "All") {
@@ -57,11 +57,9 @@ export function scoreContentForLead(
     }
   }
 
-  if (content.timeframes?.length) {
-    if (content.timeframes.includes(lead.timeframe)) {
-      score += 10;
-      reasons.push("timeframe match");
-    }
+  if (content.timeframes?.length && content.timeframes.includes(lead.timeframe)) {
+    score += 10;
+    reasons.push("timeframe match");
   }
 
   if (lead.confidence === "high") score += 5;
